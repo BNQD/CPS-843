@@ -1,7 +1,8 @@
 function out = myCanny (img, standard_dev, grad_threshold)
-
-    one_d_gaussian = fspecial ('gaussian', [5 1], standard_dev);
-    one_d_2_gaussian = fspecial ('gaussian', [1 5], standard_dev);
+    gaussian_size = standard_dev * 6 + 1;
+    
+    one_d_gaussian = fspecial ('gaussian', [gaussian_size 1], standard_dev);
+    one_d_2_gaussian = fspecial ('gaussian', [1 gaussian_size], standard_dev);
     
     img = MyConv(img, one_d_gaussian); 
     img = MyConv(img, one_d_2_gaussian);
