@@ -1,0 +1,33 @@
+function [out_transform, inliers] = count_inliers (matched_f_left, matched_f_right, threshold, iterations)
+    max_inliers = 0;
+    inliers_left = []
+    for i = 1:iterations
+        count_inliers = 0;
+        rand_points = randperm(length(matched_f_left), 3); %3 Random points
+        matched_f_left_rand = [matched_f_left(1:2, rand_points); [1,1,1]]';
+        matched_f_right_rand = matched_f_right(1:2, rand_points);
+
+        affine = matched_f_left_rand\matched_f_right_rand'
+        
+        for j = 1:length(matched_f_left)
+            rand_points = randperm(length(matched_f_left), 3); %3 Random points
+            matched_f_left_rand = [matched_f_left(1:2, rand_points); [1,1,1]]';
+            matched_f_right_rand = matched_f_right(1:2, rand_points);
+            total_distance = sum(matched_f_left_rand*affine - matched_f_right_rand', 'all')
+            if (abs(total_distance) < threshold)
+                count_inliers = count_inliers + 1;
+            else
+                max_inliers_mask(j) = [matched_f_left_rand;matched_f_right_rand;
+            end
+            
+        end
+        
+        if (count_inliers > max_inliers)
+           max_inliers = count_inliers;
+           out_transform = affine;
+        end
+        
+    end
+
+
+end

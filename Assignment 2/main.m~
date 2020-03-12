@@ -1,0 +1,30 @@
+%% Part 1
+close all
+alpha = 2; beta = 15; gamma = 20;
+points = generate_points(alpha, beta, gamma);
+
+%scatter3(points(:, 1), points(:, 2), points(:, 3));
+%rotate3d;
+
+A = points (:, 1:2);
+B = points (:, 3);
+
+ls_gamma = mean(B);
+least_squares = (inv(A' * A))*A'*(B-ls_gamma);
+
+
+ls_func = @(points) least_squares(1) * points(:, 1) + least_squares(2) * points(:, 2);
+orig_func = @(points) alpha * points(:, 1) + beta * points(:, 2) + gamma;
+
+ls_error = sum((ls_func(A) - B).^2);
+orig_func_error = sum((orig_func(A) - B).^2);
+
+alpha_error = least_squares(1) - alpha;
+beta_error = least_squares(2) - beta;
+disp ('Parameter Error in Alpha: ' + alpha_error);
+disp ('Parameter Error in Beta: ' + beta_error);
+
+%% RANSAC Image Stiching
+left_image = rgb2gray(imread ('parliament-left.jp');
+
+
