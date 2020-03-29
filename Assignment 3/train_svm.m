@@ -10,7 +10,7 @@ validation_neg_feats = neg_feats (round(size(neg_feats, 1) * 0.8) + 1:end, :);
 feats = cat(1,training_pos_feats,training_neg_feats);
 labels = cat(1,ones(round(pos_nImages * 0.8),1),-1*ones(round(neg_nImages * 0.8),1));
 
-lambda = 0.001;
+lambda = 0.0001;
 [w,b] = vl_svmtrain(feats',labels',lambda);
 
 fprintf('Classifier performance on train data:\n')

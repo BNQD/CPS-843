@@ -11,8 +11,8 @@ neg_imageDir = 'cropped_training_images_notfaces';
 neg_imageList = dir(sprintf('%s/*.jpg',neg_imageDir));
 neg_nImages = length(neg_imageList);
 
-cellSize = 4;
-featSize = 31*9^2;
+cellSize = 6;
+featSize = 31*cellSize^2;
 
 pos_feats = zeros(pos_nImages,featSize);
 for i=1:pos_nImages

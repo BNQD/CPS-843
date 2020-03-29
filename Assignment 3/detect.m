@@ -1,4 +1,10 @@
 %run('../vlfeat-0.9.20/toolbox/vl_setup')
+clear variables
+close all
+clc
+
+
+load ('my_svm.mat');
 imageDir = 'test_images';
 imageList = dir(sprintf('%s/*.jpg',imageDir));
 nImages = length(imageList);
@@ -7,12 +13,13 @@ bboxes = zeros(0,4);
 confidences = zeros(0,1);
 image_names = cell(0,1);
 
-cellSize = 3;
+cellSize = 6;
 dim = 36;
 
 feature_vector = [];
 
-for i=1:nImages
+%for i=1%nImages
+i = 1;
     % load and show the image
     im = im2single(imread(sprintf('%s/%s',imageDir,imageList(i).name)));
     imshow(im);
@@ -28,8 +35,8 @@ for i=1:nImages
     confs = zeros(rows,cols);
     for r=1:rows-5
         for c=1:cols-5
-            temp_feat = vl_hog(im(r:r+35, c:c+35), cellSize);
-            confs(r, c) = temp_feat(:)' * w + b;
+            temp_feat = feats(r:r+5, c:c+5, :);
+            confs(r, c) = temp_feat(:)'* w + b;
             % create feature vector for the current window and classify it using the SVM model, 
             % take dot product between feature vector and w and add b,
             % store the result in the matrix of confidence scores confs(r,c)
@@ -39,17 +46,53 @@ for i=1:nImages
        
     % get the most confident predictions 
     [~,inds] = sort(confs(:),'descend');
-    inds = inds(1:20); % (use a bigger number for better recall)
-    for n=1:numel(inds)        
-        [row,col] = ind2sub([size(feats,1) size(feats,2)],inds(n));
+    inds = inds(1:length(confs(:))); % (use a bigger number for better recall)
+    offset = 0;
+    for n=1:15
+        overlap_flag = true;
+        orig_offset = offset;
         
-        bbox = [ col*cellSize ...
-                 row*cellSize ...
-                (col+cellSize-1)*cellSize ...
-                (row+cellSize-1)*cellSize];
+        while overlap_flag == true
+            ovmax = 0;
+            [row,col] = ind2sub([size(feats,1) size(feats,2)],inds(n + offset));
+            bbox = [ col*cellSize ...
+                     row*cellSize ...
+                    (col+cellSize-1)*cellSize ...
+                    (row+cellSize-1)*cellSize];
+            
+            if (isempty(bboxes))
+                overlap_flag = false;
+            else
+                for box_num = 1:size(bboxes, 1)
+                    %Taken from "evaluate_detections_on_test.m"
+                    bb = bbox;
+                    bbgt=bboxes(box_num,:);
+                    bi=[max(bb(1),bbgt(1)) ; max(bb(2),bbgt(2)) ; min(bb(3),bbgt(3)) ; min(bb(4),bbgt(4))];
+                    iw=bi(3)-bi(1)+1;
+                    ih=bi(4)-bi(2)+1;
+                    if iw>0 && ih>0       
+                        % compute overlap as area of intersection / area of union
+                        ua=(bb(3)-bb(1)+1)*(bb(4)-bb(2)+1)+...
+                           (bbgt(3)-bbgt(1)+1)*(bbgt(4)-bbgt(2)+1)-...
+                           iw*ih;
+                        ov=iw*ih/ua;
+                        disp(ov);
+                        if ov>ovmax %higher overlap than the previous best?
+                            ovmax=ov;
+                            jmax=box_num;
+                        end
+                    end
+                end
+                if ovmax < 0.5
+                    overlap_flag = false;
+                else
+                    offset = offset + 1;
+                end 
+            end
+        end
+                
         conf = confs(row,col);
         image_name = {imageList(i).name};
-        
         % plot
         plot_rectangle = [bbox(1), bbox(2); ...
             bbox(1), bbox(4); ...
@@ -65,9 +108,9 @@ for i=1:nImages
     end
     pause;
     fprintf('got preds for image %d/%d\n', i,nImages);
-end
+%end
 
 % evaluate
 label_path = 'test_images_gt.txt';
 [gt_ids, gt_bboxes, gt_isclaimed, tp, fp, duplicate_detections] = ...
-    evaluate_detections(bboxes, confidences, image_names, label_path);
+    evaluate_detections_on_test(bboxes, confidences, image_names, label_path);
