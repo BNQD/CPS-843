@@ -1,4 +1,4 @@
-run('../vlfeat-0.9.20/toolbox/vl_setup')
+%run('../vlfeat-0.9.20/toolbox/vl_setup')
 imageDir = 'test_images';
 imageList = dir(sprintf('%s/*.jpg',imageDir));
 nImages = length(imageList);
@@ -7,8 +7,11 @@ bboxes = zeros(0,4);
 confidences = zeros(0,1);
 image_names = cell(0,1);
 
-cellSize = 6;
+cellSize = 3;
 dim = 36;
+
+feature_vector = [];
+
 for i=1:nImages
     % load and show the image
     im = im2single(imread(sprintf('%s/%s',imageDir,imageList(i).name)));
@@ -25,11 +28,12 @@ for i=1:nImages
     confs = zeros(rows,cols);
     for r=1:rows-5
         for c=1:cols-5
-
-        % create feature vector for the current window and classify it using the SVM model, 
-        % take dot product between feature vector and w and add b,
-	% store the result in the matrix of confidence scores confs(r,c)
-
+            temp_feat = vl_hog(im(r:r+35, c:c+35), cellSize);
+            confs(r, c) = temp_feat(:)' * w + b;
+            % create feature vector for the current window and classify it using the SVM model, 
+            % take dot product between feature vector and w and add b,
+            % store the result in the matrix of confidence scores confs(r,c)
+            
         end
     end
        
