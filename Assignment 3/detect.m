@@ -19,16 +19,21 @@ dim = 36;
 
 feature_vector = [];
 
-%for imgNum=1:10floor(nImages/2)
-imgNum = 12;
+for imgNum=1:nImages
+    close all
+    bboxes = zeros(0,4);
+    confidences = zeros(0,1);
+    image_names = cell(0,1);
+    box_conf = [];
+%imgNum = 6;
     % load and show the image
-    %orig_im = im2single(imread(sprintf('%s/%s',imageDir,imageList(imgNum).name)));
-    orig_im = im2single(imread('class.jpg'));
+    orig_im = im2single(imread(sprintf('%s/%s',imageDir,imageList(imgNum).name)));
+    %orig_im = im2single(imread('class.jpg'));
     imshow(orig_im);
     hold on;
     % generate a grid of features across the entire image. you may want to 
     % try generating features more densely (i.e., not in a grid)
-    scales = 1:-0.05:0.1;
+    scales = 1:-0.05:0.05;
     
     for s = scales
         disp(s)
@@ -151,7 +156,7 @@ imgNum = 12;
         if ovmax < 0.01
             overlap_flag = false;
         end 
-        if (box_conf(i, 5) > 2 && overlap_flag == false)
+        if (box_conf(i, 5) > 1.3 && overlap_flag == false)
             plot_rectangle = [bbox(1), bbox(2); ...
             bbox(1), bbox(4); ...
             bbox(3), bbox(4); ...
@@ -164,9 +169,9 @@ imgNum = 12;
             
         end
     end
-    %pause;
+    pause;
     fprintf('got preds for image %d/%d\n', imgNum,nImages);
-%end
+end
 
 % evaluate
 %label_path = 'test_images_gt.txt';
