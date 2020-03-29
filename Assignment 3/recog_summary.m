@@ -1,3 +1,7 @@
+%%
+disp ("Student A: Bao Doan 500733516");
+disp ("Student B: Li Ne Li 500722909");
+
 fprintf ("The splitting of test and validation data was done in train_svm. By separating the pos and neg features\n" + ...
     "through splicing.\n");
 
