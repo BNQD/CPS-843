@@ -11,3 +11,4 @@ fprintf ("The training set had an accuracy of 99.1 after the training. When usin
     "the training set to 1 and the validation set to 99.2. The lambda value was decreased from 0.1 to 0.0001\n");
 
 
+

@@ -28,7 +28,7 @@ imgNum = 12;
     hold on;
     % generate a grid of features across the entire image. you may want to 
     % try generating features more densely (i.e., not in a grid)
-    scales = 1:-0.05:0.1;
+    scales = 0.90:-0.05:0.15;
     
     for s = scales
         disp(s)
@@ -151,7 +151,7 @@ imgNum = 12;
         if ovmax < 0.01
             overlap_flag = false;
         end 
-        if (box_conf(i, 5) > 2 && overlap_flag == false)
+        if (box_conf(i, 5) > 1.8 && overlap_flag == false)
             plot_rectangle = [bbox(1), bbox(2); ...
             bbox(1), bbox(4); ...
             bbox(3), bbox(4); ...
@@ -168,7 +168,6 @@ imgNum = 12;
     fprintf('got preds for image %d/%d\n', imgNum,nImages);
 %end
 
-% evaluate
-%label_path = 'test_images_gt.txt';
-%[gt_ids, gt_bboxes, gt_isclaimed, tp, fp, duplicate_detections] = ...
-%    evaluate_detections_on_test(final_boxes, final_conf, final_img_names, label_path);
+%evaluate
+bboxes = final_boxes;
+confidences = final_conf;
