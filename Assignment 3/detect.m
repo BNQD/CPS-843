@@ -19,16 +19,16 @@ dim = 36;
 
 feature_vector = [];
 
-%for i=1%nImages
-i = 56;
+%for imgNum=1:10floor(nImages/2)
+imgNum = 12;
     % load and show the image
-    orig_im = im2single(imread(sprintf('%s/%s',imageDir,imageList(i).name)));
+    orig_im = im2single(imread(sprintf('%s/%s',imageDir,imageList(imgNum).name)));
+    %orig_im = im2single(imread('class.jpg'));
     imshow(orig_im);
     hold on;
-    
     % generate a grid of features across the entire image. you may want to 
     % try generating features more densely (i.e., not in a grid)
-    scales = 1:-0.05:0.15;
+    scales = 1:-0.05:0.1;
     
     for s = scales
         disp(s)
@@ -91,20 +91,16 @@ i = 56;
                             end
                         end
                     end
-                    if ovmax < 0.3
+                    if ovmax < 0.6
                         overlap_flag = false;
                     else
-                        if (conf > confidences(jmax))
-                           bboxes(jmax, :) = bbox; 
-                           confidences(jmax) = conf;
-                        end
                         offset = offset + 1;
                     end 
                 end
             end
 
             conf = confs(row,col);
-            image_name = {imageList(i).name};
+            image_name = {imageList(imgNum).name};
             % plot
             
             
@@ -120,6 +116,12 @@ i = 56;
     
     
     box_conf = sortrows(unique(box_conf, 'rows'), 5, 'descend');
+    box_conf = box_conf(box_conf(:, 5) ~= 1, :);
+    
+    final_boxes = [];
+    final_conf = [];
+    final_img_names = [];
+    
     for i = 1:size(box_conf, 1)
         bbox = box_conf(i, :);
         ovmax = 0;
@@ -146,23 +148,27 @@ i = 56;
             end
         end
         %disp(ovmax);
-        if ovmax < 0.15
+        if ovmax < 0.01
             overlap_flag = false;
         end 
-        if (box_conf(i, 5) > 1 && overlap_flag == false)
+        if (box_conf(i, 5) > 0.90 && overlap_flag == false)
             plot_rectangle = [bbox(1), bbox(2); ...
             bbox(1), bbox(4); ...
             bbox(3), bbox(4); ...
             bbox(3), bbox(2); ...
             bbox(1), bbox(2)];
             plot(plot_rectangle(:,1), plot_rectangle(:,2), 'g-');
+            final_boxes = [final_boxes;bbox];
+            final_conf = [final_conf;bbox(5)];
+            final_img_names = [final_img_names;image_name];
+            
         end
     end
-    pause;
-    fprintf('got preds for image %d/%d\n', i,nImages);
+    %pause;
+    fprintf('got preds for image %d/%d\n', imgNum,nImages);
 %end
 
 % evaluate
-label_path = 'test_images_gt.txt';
-[gt_ids, gt_bboxes, gt_isclaimed, tp, fp, duplicate_detections] = ...
-    evaluate_detections_on_test(bboxes, confidences, image_names, label_path);
+%label_path = 'test_images_gt.txt';
+%[gt_ids, gt_bboxes, gt_isclaimed, tp, fp, duplicate_detections] = ...
+%    evaluate_detections_on_test(final_boxes, final_conf, final_img_names, label_path);

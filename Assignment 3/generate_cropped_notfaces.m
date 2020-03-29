@@ -1,6 +1,6 @@
 % you might want to have as many negative examples as positive examples
 n_have = numel(dir('cropped_training_images_notfaces/*.jpg'));
-n_want = round(numel(dir('cropped_training_images_faces/*.jpg')) * 0.6);
+n_want = round(numel(dir('cropped_training_images_faces/*.jpg')));
 
 imageDir = 'images_notfaces';
 imageList = dir(sprintf('%s/*.jpg',imageDir));
