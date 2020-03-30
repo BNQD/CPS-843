@@ -12,3 +12,5 @@ fprintf ("The training set had an accuracy of 99.1 after the training. When usin
 
 
 
+
+
