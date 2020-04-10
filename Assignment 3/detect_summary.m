@@ -1,4 +1,3 @@
-
 disp ("Student A: Bao Doan 500733516");
 disp ("Student B: Li Ne Li 500722909");
 
