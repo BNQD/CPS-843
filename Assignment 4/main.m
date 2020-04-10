@@ -37,16 +37,36 @@ plot(gaussian_sizes, time_taken_frequency);
 title ('Convolution Times');
 legend ('Conv2', 'Frequency Domain');
 
-fprintf ("Conv2 has a increasing trend in terms of computation time whereas multiplication in the frequency domain \n" + ...
+fprintf ("Conv2 has a increasing trend in terms of computation time whereas multiplimeion in the frequency domain \n" + ...
     "is consistent and does not increase too much as the window size increases. For small window sizes, \n" + ...
     "The initial time taken in the frequency domain is higher than conv2, however, as the window size increases \n" + ...
     "the performance of frequency domain convolution is superior\n");
 
 %% Hybrid Image
-cat = imresize(rgb2gray(imread ('cat.jpg')), [480 640]);
-dog = imresize(rgb2gray(imread ('dog.jpg')), [480 640]);
+me = imresize(rgb2gray(imread ('me.jpg')), [480 640]);
+girl = imresize(rgb2gray(imread ('girl.jpg')), [480 640]);
+girl = imtranslate(girl, [-25, -10]);
 
-cat_freq = fft2(cat);
-dog_freq = fft2(dog);
+me_freq = fft2(me);
+girl_freq = fft2(girl);
 
+sigma = 4;
+gaussian_filter = fspecial ('gaussian', sigma*6+1, sigma);
+me_g = conv2(me, gaussian_filter, 'same');
+girl_g = conv2(girl, gaussian_filter, 'same');
 
+high_girl = girl_g - double(girl);
+low_me = me_g;
+
+added = uint8(high_girl + low_me);
+
+figure(2);
+imshow (added);
+title ('girl');
+
+small_added = imresize(added, 0.2);
+figure(3);
+imshow(small_added);
+title ('me');
+
+%% Optical Flow Esimation
