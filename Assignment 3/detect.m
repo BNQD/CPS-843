@@ -25,7 +25,7 @@ for imgNum=1:nImages
     confidences = zeros(0,1);
     image_names = cell(0,1);
     box_conf = [];
-%imgNum = 6;
+    %imgNum = 6;
     % load and show the image
     orig_im = im2single(imread(sprintf('%s/%s',imageDir,imageList(imgNum).name)));
     %orig_im = im2single(imread('class.jpg'));
@@ -33,7 +33,7 @@ for imgNum=1:nImages
     hold on;
     % generate a grid of features across the entire image. you may want to 
     % try generating features more densely (i.e., not in a grid)
-    scales = 1:-0.05:0.05;
+    scales = 1:-0.05:0.2;
     
     for s = scales
         disp(s)

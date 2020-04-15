@@ -16,10 +16,10 @@ while n_have < n_want
     rand_img = imread(strcat("images_notfaces/", rand_img_name));
     
     rows = size(rand_img, 1) - dim;
-    width = size(rand_img, 2) - dim;
+    cols = size(rand_img, 2) - dim;
     
-    rand_row = floor(rand() * (size(rand_img, 1) - dim)) + 1;
-    rand_col = floor(rand() * (size(rand_img, 2) - dim)) + 1;
+    rand_row = floor(rand() * rows) + 1;
+    rand_col = floor(rand() * cols) + 1;
     
     rand_window = rgb2gray(rand_img (rand_row:rand_row+dim-1, rand_col:rand_col+dim-1, :));
     

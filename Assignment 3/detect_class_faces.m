@@ -171,3 +171,4 @@ imgNum = 12;
 %evaluate
 bboxes = final_boxes;
 confidences = final_conf;
+N = length(bboxes);
